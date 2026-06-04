@@ -43,7 +43,7 @@ That would be too easy of course. We have to resort to actual reverse-engineerin
 ```
 The binary reads the input using `fgets` into a buffer of size 100, offset by 1 byte. Soon after, the input is validated using many steps. First the length is checked to be `0x29`. Then, finding out the first character is easy:
 ```asm
-0010126b 0f b6 45 90     MOVZX      EAX,byte ptr [RBP + input+0x1]
+0010126b 0f b6 45 90     MOVZX      EAX,byte ptr [RBP + input[0]]
 0010126f 3c 54           CMP        AL,0x54
 00101271 74 19           JZ         LAB_0010128c
 00101273 48 8d 05        LEA        RAX,[s_Wrong!_00102015] ; This loads the "Wrong!" string
@@ -53,8 +53,8 @@ The first input character must be `0x54` or `T`. This matches up with other flag
 
 Then there follow a bunch of redundant XOR checks. We can completely skip these. Then we finally get to a bunch of these blocks:
 ```asm
-001014d3 0f b6 55 90     MOVZX      EDX,byte ptr [RBP + input[1]]
-001014d7 0f b6 45 91     MOVZX      EAX,byte ptr [RBP + input[2]]
+001014d3 0f b6 55 90     MOVZX      EDX,byte ptr [RBP + input[0]]
+001014d7 0f b6 45 91     MOVZX      EAX,byte ptr [RBP + input[1]]
 001014db 31 d0           XOR        EAX,EDX
 001014dd 3c 26           CMP        AL,0x26
 ```
